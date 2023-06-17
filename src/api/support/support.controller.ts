@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { SupportService } from './support.service';
 import { CreateSupportDto } from './dto/create-support.dto';
 import { UpdateSupportDto } from './dto/update-support.dto';
+import { EndpointEnum } from '@/app/utils/endpoint.enum';
 
-@Controller('support')
+@Controller(EndpointEnum.SUPPORT)
 export class SupportController {
   constructor(private readonly supportService: SupportService) {}
 

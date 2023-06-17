@@ -6,8 +6,15 @@ import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import validationOptions from './app/utils/validation-options';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
+  const microservice =
+    await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+      transport: Transport.TCP,
+    });
+  await microservice.listen();
+
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
 

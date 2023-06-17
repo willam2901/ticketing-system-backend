@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import configs from './app/config';
 import { ConfigModule } from '@nestjs/config';
 import { SupportModule } from './api/support/support.module';
+import { SupportsModule } from './microservice/supports/supports.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { SupportModule } from './api/support/support.module';
       envFilePath: ['.env'],
     }),
     SupportModule,
+    SupportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
