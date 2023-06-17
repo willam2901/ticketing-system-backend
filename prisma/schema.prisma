@@ -13,11 +13,24 @@ datasource db {
 
 
 model Support {
-  id  String @id @default(auto()) @map("_id") @db.ObjectId
-  uid String
-  title String
-  description String?
-  isDelete Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id                String @id      @default(auto()) @map("_id") @db.ObjectId
+  uid               String
+  title             String
+  description       String?
+  caseClosed        Boolean         @default(false)
+  isDelete          Boolean         @default(false)
+  supportDetails    SupportDetails[]
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @default(now())
+}
+
+model SupportDetails {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  support_id    String
+  support       Support         @relation(fields: [support_id], references: [id])
+  message       String
+  sender        String
+  sender_name   String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now())
 }
