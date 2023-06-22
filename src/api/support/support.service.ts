@@ -11,19 +11,22 @@ export class SupportService {
     return this.prismaService.support.create({ data: createSupportDto });
   }
 
-  findAll() {
-    return `This action returns all support`;
+  async findAll() {
+    return this.prismaService.support.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} support`;
+  async findOne(id: string) {
+    return this.prismaService.support.findFirst({ where: { id } });
   }
 
-  update(id: number, updateSupportDto: UpdateSupportDto) {
-    return `This action updates a #${id} support`;
+  update(id: string, updateSupportDto: UpdateSupportDto) {
+    return this.prismaService.support.update({
+      where: { id },
+      data: updateSupportDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} support`;
+  remove(id: string) {
+    return this.prismaService.support.delete({ where: { id } });
   }
 }
