@@ -6,12 +6,35 @@ import { SupportFilter } from '@/api/support/dto/support.filter';
 import { SupportDetailsFilter } from '@/api/support-details/dto/support-details.filter';
 import { AppMessage } from '@/app/utils/messages.enum';
 import { HttpStatusCode } from 'axios';
+import { TwilioWebhookService } from '@/api/twilio-webhook/twilio-webhook.service';
+import * as Twilio from 'twilio';
 
 @Injectable()
 export class SupportDetailsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  private client: Twilio.Twilio;
+
+  constructor(private readonly prismaService: PrismaService) {
+    this.client = new Twilio.Twilio(
+      process.env.TWILIO_SID,
+      process.env.TWILIO_TOKEN,
+    );
+  }
 
   async create(createSupportDetailDto: CreateSupportDetailDto) {
+    let findReceiverData = await this.prismaService.support.findFirst({
+      where: { id: createSupportDetailDto.support_id },
+    });
+
+    try {
+      let data = await this.client.messages.create({
+        body: createSupportDetailDto.message,
+        from: `whatsapp:${process.env.SENDER_PHONE}`,
+        to: `whatsapp:${findReceiverData.uid}`,
+      });
+    } catch (error) {
+      console.error('Twilio Error:', error);
+    }
+
     return this.prismaService.supportDetails.create({
       data: createSupportDetailDto,
     });
