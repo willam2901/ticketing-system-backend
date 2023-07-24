@@ -15,6 +15,7 @@ datasource db {
 model Support {
   id                String @id      @default(auto()) @map("_id") @db.ObjectId
   uid               String
+  name              String
   title             String
   description       String?
   caseClosed        Boolean         @default(false)
