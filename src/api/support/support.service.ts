@@ -17,8 +17,6 @@ export class SupportService {
   }
 
   async findAll(filterQuery: SupportFilter) {
-    console.log(filterQuery);
-
     if (!filterQuery.page) {
       filterQuery.page = 1;
     }

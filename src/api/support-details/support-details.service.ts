@@ -1,7 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateSupportDetailDto } from './dto/create-support-detail.dto';
 import { UpdateSupportDetailDto } from './dto/update-support-detail.dto';
 import { PrismaService } from '@/prisma/prisma.service';
+import { SupportFilter } from '@/api/support/dto/support.filter';
+import { SupportDetailsFilter } from '@/api/support-details/dto/support-details.filter';
+import { AppMessage } from '@/app/utils/messages.enum';
+import { HttpStatusCode } from 'axios';
 
 @Injectable()
 export class SupportDetailsService {
@@ -13,19 +17,120 @@ export class SupportDetailsService {
     });
   }
 
-  findAll() {
-    return this.prismaService.supportDetails.findMany();
+  async findAll(filterQuery: SupportDetailsFilter) {
+    if (!filterQuery.page) {
+      filterQuery.page = 1;
+    }
+    if (!filterQuery.limit) {
+      filterQuery.limit = 10;
+    }
+
+    filterQuery.limit = filterQuery.limit === 0 ? 1 : filterQuery.limit;
+    filterQuery.page = filterQuery.page === 0 ? 1 : filterQuery.page;
+
+    filterQuery.page = parseInt(String(filterQuery.page));
+    filterQuery.limit = parseInt(String(filterQuery.limit));
+
+    let aggregation = [];
+
+    /*Filter*/
+    if (filterQuery.id) {
+      aggregation.push({
+        id: filterQuery.id,
+      });
+    }
+    if (filterQuery.support_id) {
+      aggregation.push({
+        support_id: filterQuery.support_id,
+      });
+    }
+    if (filterQuery.message) {
+      aggregation.push({
+        message: { contains: filterQuery.message, mode: 'insensitive' },
+      });
+    }
+
+    if (filterQuery.sender) {
+      aggregation.push({
+        sender: { contains: filterQuery.sender, mode: 'insensitive' },
+      });
+    }
+
+    if (filterQuery.sender_name) {
+      aggregation.push({
+        sender_name: { contains: filterQuery.sender_name, mode: 'insensitive' },
+      });
+    }
+
+    /*
+     *
+     * Pagination Query
+     *
+     * */
+    let data = await this.prismaService.supportDetails.findMany({
+      where: {
+        OR: aggregation,
+      },
+    });
+    let pagination = {
+      page: filterQuery.page,
+      limit: filterQuery.limit,
+      total: data.length,
+      totalPages:
+        data.length < filterQuery.limit ? 1 : data.length / filterQuery.limit,
+      hasNextPage: Boolean(
+        data.length / filterQuery.limit !== filterQuery.page,
+      ),
+    };
+
+    let allData;
+    if (aggregation.length > 0) {
+      allData = await this.prismaService.supportDetails.findMany({
+        take: pagination.limit,
+        skip: (filterQuery.page - 1) * filterQuery.limit,
+        where: {
+          OR: aggregation,
+        },
+      });
+    } else {
+      allData = await this.prismaService.supportDetails.findMany({
+        take: pagination.limit,
+        skip: (filterQuery.page - 1) * filterQuery.limit,
+      });
+    }
+
+    return { ...pagination, allData };
   }
 
   findOne(id: string) {
-    return `This action returns a #${id} supportDetail`;
+    return this.prismaService.supportDetails.findFirst({
+      where: { id },
+    });
   }
 
-  update(id: string, updateSupportDetailDto: UpdateSupportDetailDto) {
-    return `This action updates a #${id} supportDetail`;
+  async update(id: string, updateSupportDetailDto: UpdateSupportDetailDto) {
+    let getSupportDetails = await this.prismaService.supportDetails.findFirst({
+      where: { id: id },
+    });
+
+    if (!Boolean(getSupportDetails))
+      throw new HttpException(AppMessage.NOT_FOUND, HttpStatusCode.NotFound);
+    return this.prismaService.support.update({
+      where: { id: id },
+      data: updateSupportDetailDto,
+    });
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} supportDetail`;
+  async remove(id: string) {
+    let getSupportDetails = await this.prismaService.support.findFirst({
+      where: { id },
+    });
+
+    if (!Boolean(getSupportDetails))
+      throw new HttpException(AppMessage.NOT_FOUND, HttpStatusCode.NotFound);
+
+    return await this.prismaService.supportDetails.delete({
+      where: { id: id },
+    });
   }
 }
