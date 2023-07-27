@@ -1,4 +1,4 @@
-name: Deploy to DigitalOcean Droplet
+name: Deploy to Droplet with PM2
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
+      - name: Install Node.js
         uses: actions/setup-node@v2
         with:
           node-version: 14
@@ -21,26 +21,27 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install PM2
-        run: npm install -g pm2
-
-      - name: Build
+      - name: Build the app
         run: npm run build
 
-      - name: Deploy to DigitalOcean
+      - name: Transfer files to Droplet
+        uses: appleboy/scp-action@v1
+        with:
+          host: 128.199.164.212
+          username: root
+          password: 4PTB!TZ9&cdhAT
+          source: "dist/"  # Assuming the compiled files are in the "dist" folder
+          target: "/support-microservice"
+
+      - name: SSH into Droplet and deploy using PM2
         uses: appleboy/ssh-action@master
         with:
           host: 128.199.164.212
           username: root
-          # You should use SSH key-based authentication instead of password.
-          # Generate an SSH key pair if you haven't already, and add the public key to the Droplet.
-          # Then, store the private key as a secret in your GitHub repository and use it here.
-          # Example: {{ secrets.SSH_PRIVATE_KEY }}
           password: 4PTB!TZ9&cdhAT
           script: |
-            cd /
-            npm ci
-            npm run build
-            pm2 stop support-microservice # Stop the previous instance if running.
-            pm2 delete support-microservice # Delete the previous instance if exists.
+            cd /support-microservice
+            npm install pm2 -g
+            pm2 delete nest-app || true  # Stop the app if it's already running
             pm2 start dist/main.js --name support-microservice
+
