@@ -21,11 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-
-      - name: Install PM2
-        run: npm install -g pm2
-
-
       - name: Build
         run: npm run build
 
