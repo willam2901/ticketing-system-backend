@@ -33,7 +33,7 @@ jobs:
           script: |
             cd support-microservice
             git pull
-            npm ci
+            npm install
             npm run build
             pm2 stop server
             pm2 delete server
