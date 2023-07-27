@@ -30,7 +30,7 @@ jobs:
         with:
           host: 128.199.164.212
           username: root
-          password: ${{ secrets.SSH_PASSWORD }}  # Use a GitHub secret for security
+          password: 4PTB!TZ9&cdhAT  # Use a GitHub secret for security
           source: dist  # Assuming your built files are in the 'dist' directory
           target: /support-microservice  # Replace with the actual path on your Droplet
 
