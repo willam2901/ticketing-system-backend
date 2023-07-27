@@ -43,8 +43,8 @@ jobs:
           host: 128.199.164.212
           username: root
           password: 4PTB!TZ9&cdhAT  # Use a GitHub secret for security
-#          script: |
-#            cd /support-microservice
+          script: |
+            cd /support-microservice
 #            pm2 stop server || true
 #            pm2 delete server || true
 #            pm2 start main.js --name server
