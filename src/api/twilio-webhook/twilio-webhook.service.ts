@@ -3,6 +3,7 @@ import * as Twilio from 'twilio';
 import { SupportService } from '@/api/support/support.service';
 import { CreateSupportDto } from '@/api/support/dto/create-support.dto';
 import { PrismaService } from '@/prisma/prisma.service';
+import { CommandEnum } from '@/api/twilio-webhook/enum/command.enum';
 
 @Injectable()
 export class TwilioWebhookService {
@@ -19,7 +20,7 @@ export class TwilioWebhookService {
   }
 
   async support(payload: any) {
-    if (payload.Body.toLowerCase() === 'help') {
+    if (payload.Body.toLowerCase() === CommandEnum.HELP) {
       let data = await this.prismaService.support.create({
         data: {
           uid: payload.WaId,
@@ -41,6 +42,7 @@ export class TwilioWebhookService {
       await this.sendWhatsAppMessage(payload.WaId, 'Describe your issue.');
     } else {
       const lastSupport = await this.prismaService.support.findFirst({
+        where: { uid: payload.WaId },
         orderBy: { createdAt: 'desc' },
         take: 1,
       });
