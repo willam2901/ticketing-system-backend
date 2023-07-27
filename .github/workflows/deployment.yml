@@ -43,9 +43,9 @@ jobs:
           host: 128.199.164.212
           username: root
           password: 4PTB!TZ9&cdhAT  # Use a GitHub secret for security
-          script: |
-            cd /support-microservice # Replace with the actual path on your Droplet
-            pm2 stop server || true  # Use '|| true' to ignore errors if the process is not running
-            pm2 delete server || true
-            pm2 start main.js --name server  # Assuming your entry point file is 'main.js'
+#          script: |
+#            cd /support-microservice
+#            pm2 stop server || true
+#            pm2 delete server || true
+#            pm2 start main.js --name server
 
