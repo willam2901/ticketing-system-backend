@@ -23,7 +23,6 @@ jobs:
 
       - name: Build
         run: npm run build
-
       - name: Copy files to DigitalOcean Droplet
         uses: appleboy/ssh-action@master
         with:
@@ -33,8 +32,8 @@ jobs:
           script: |
             # Create the 'support-microservice' folder if it doesn't exist
             mkdir -p /support-microservice
-            # Copy files from 'dist' to 'support-microservice' folder
-            cp -r dist/* /support-microservice
+            # Copy files from 'build' to 'support-microservice' folder
+            cp -r build/* /support-microservice
 
       - name: Install PM2
         run: npm install -g pm2
