@@ -31,7 +31,7 @@ jobs:
           username: root
           password: 4PTB!TZ9&cdhAT
           script: |
-            cd support-microservice
+            cd support
             git pull
             npm install
             npm run build
