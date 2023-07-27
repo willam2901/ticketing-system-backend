@@ -24,25 +24,17 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Add a new step to copy the built files to the Droplet
       - name: Copy files to DigitalOcean Droplet
-        uses: appleboy/scp-action@master
-        with:
-          host: 128.199.164.212
-          username: root
-          password: 4PTB!TZ9&cdhAT
-          source: dist  # Assuming your built files are in the 'dist' directory
-          target: /support-microservice  # Replace with the actual path on your Droplet
-
-      # Updated step to move the files to the correct folder
-      - name: Move files to support-microservice folder
         uses: appleboy/ssh-action@master
         with:
           host: 128.199.164.212
           username: root
           password: 4PTB!TZ9&cdhAT  # Use a GitHub secret for security
           script: |
-            mv /support-microservice/dist/* /support-microservice/
+            # Create the 'support-microservice' folder if it doesn't exist
+            mkdir -p /support-microservice
+            # Copy files from 'dist' to 'support-microservice' folder
+            cp -r dist/* /support-microservice
 
       - name: Install PM2
         run: npm install -g pm2
@@ -52,12 +44,9 @@ jobs:
         with:
           host: 128.199.164.212
           username: root
-          password: 4PTB!TZ9&cdhAT
+          password: 4PTB!TZ9&cdhAT  # Use a GitHub secret for security
           script: |
             cd /support-microservice
             pm2 stop server || true
             pm2 delete server || true
             pm2 start main.js --name server
-
-
-
