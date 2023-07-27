@@ -38,7 +38,7 @@ jobs:
           # Example: {{ secrets.SSH_PRIVATE_KEY }}
           password: 4PTB!TZ9&cdhAT
           script: |
-            cd /support-microservice
+            cd /
             npm ci
             npm run build
             pm2 stop support-microservice # Stop the previous instance if running.
