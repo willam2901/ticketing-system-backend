@@ -33,6 +33,7 @@ jobs:
           script: |
             cd support
             git pull
+            npm ci
             npm install
             npm run build
             pm2 stop server
