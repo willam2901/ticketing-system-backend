@@ -1,4 +1,4 @@
-name: Deploy to Droplet with PM2
+name: Deploy to DigitalOcean Droplet
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: 14
@@ -21,27 +21,27 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build the app
+
+      - name: Install PM2
+        run: npm install -g pm2
+
+
+      - name: Build
         run: npm run build
 
-      - name: Transfer files to Droplet
-        uses: appleboy/scp-action@v1
-        with:
-          host: 128.199.164.212
-          username: root
-          password: 4PTB!TZ9&cdhAT
-          source: "dist/"  # Assuming the compiled files are in the "dist" folder
-          target: "/support-microservice"
-
-      - name: SSH into Droplet and deploy using PM2
+      - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@master
         with:
           host: 128.199.164.212
           username: root
           password: 4PTB!TZ9&cdhAT
           script: |
-            cd /support-microservice
-            npm install pm2 -g
-            pm2 delete nest-app || true  # Stop the app if it's already running
-            pm2 start dist/main.js --name support-microservice
+            cd support-microservice
+            git pull
+            npm ci
+            npm run build
+            pm2 stop server
+            pm2 delete server
+            pm2 start dist/main.js --name server
+
 
