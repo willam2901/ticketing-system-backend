@@ -21,32 +21,26 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build
-        run: npm run build
-
-      - name: Copy files to DigitalOcean Droplet
-        uses: appleboy/ssh-action@master
-        with:
-          host: 128.199.164.212
-          username: root
-          password: 4PTB!TZ9&cdhAT  # Use a GitHub secret for security
-          script: |
-            # Create the 'support-microservice' folder if it doesn't exist
-            mkdir -p /support-microservice
-            # Copy files from 'dist' to 'support-microservice' folder
-            cp -r dist/* /support-microservice
-
       - name: Install PM2
         run: npm install -g pm2
+
+      - name: Build
+        run: npm run build
 
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@master
         with:
           host: 128.199.164.212
           username: root
-          password: 4PTB!TZ9&cdhAT  # Use a GitHub secret for security
+          # You should use SSH key-based authentication instead of password.
+          # Generate an SSH key pair if you haven't already, and add the public key to the Droplet.
+          # Then, store the private key as a secret in your GitHub repository and use it here.
+          # Example: {{ secrets.SSH_PRIVATE_KEY }}
+          password: 4PTB!TZ9&cdhAT
           script: |
             cd /support-microservice
-            pm2 stop server || true
-            pm2 delete server || true
-            pm2 start main.js --name server
+            npm ci
+            npm run build
+            pm2 stop support-microservice # Stop the previous instance if running.
+            pm2 delete support-microservice # Delete the previous instance if exists.
+            pm2 start dist/main.js --name support-microservice
