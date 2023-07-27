@@ -37,6 +37,4 @@ jobs:
             npm run build
             pm2 stop server
             pm2 delete server
-            pm2 start dist/main.js --name server
-
-
+            npm start
