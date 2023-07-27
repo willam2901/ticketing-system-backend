@@ -30,19 +30,34 @@ jobs:
       - name: Build
         run: npm run build
 
+
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@master
         with:
           host: 128.199.164.212
           username: root
-          password: 4PTB!TZ9&cdhAT #${{ secrets.pass }}
+          password: ${{ secrets.pass }}
           script: |
-            cd support-microservice
-            git pull
+            # Create a temporary directory for the build files
+            mkdir -p /tmp/support-microservice
+            
+            # Copy the build files to the server's temporary directory
+            cp -r dist /tmp/support-microservice
+            cp package.json package-lock.json /tmp/support-microservice
+            
+            # Navigate to the application directory
+            cd /root/support-microservice
+            
+            # Stop and delete the previous PM2 process if it exists
+            pm2 stop support-microservice
+            pm2 delete support-microservice
+            
+            # Copy the build files from the temporary directory to the application directory
+            cp -r /tmp/support-microservice/* .
+            
+            # Install dependencies and start the application with PM2
             npm ci
-            npm run build
-            pm2 stop server
-            pm2 delete server
-            pm2 start dist/main.js --name support-microservice
-
-
+            pm2 start main.js --name support-microservice
+            
+            # Cleanup: Remove the temporary directory
+            rm -rf /tmp/support-microservice
