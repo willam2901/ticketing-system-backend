@@ -31,12 +31,11 @@ jobs:
           username: root
           password: 4PTB!TZ9&cdhAT
           script: |
-            cd support
+            cd ticketing-system-backend
             git pull
             npm ci
-            npm install
             npm run build
             pm2 stop server
             pm2 delete server
-            npm start
+            pm2 start dist/main.js --name support-microservice
             
