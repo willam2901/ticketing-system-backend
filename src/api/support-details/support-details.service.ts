@@ -35,7 +35,7 @@ export class SupportDetailsService {
       console.error('Twilio Error:', error);
     }
 
-    return this.prismaService.supportDetails.create({
+    return this.prismaService.chat.create({
       data: createSupportDetailDto,
     });
   }
@@ -90,7 +90,7 @@ export class SupportDetailsService {
      * Pagination Query
      *
      * */
-    let data = await this.prismaService.supportDetails.findMany({
+    let data = await this.prismaService.chat.findMany({
       where: {
         OR: aggregation,
       },
@@ -108,7 +108,7 @@ export class SupportDetailsService {
 
     let allData;
     if (aggregation.length > 0) {
-      allData = await this.prismaService.supportDetails.findMany({
+      allData = await this.prismaService.chat.findMany({
         take: pagination.limit,
         skip: (filterQuery.page - 1) * filterQuery.limit,
         where: {
@@ -116,7 +116,7 @@ export class SupportDetailsService {
         },
       });
     } else {
-      allData = await this.prismaService.supportDetails.findMany({
+      allData = await this.prismaService.chat.findMany({
         take: pagination.limit,
         skip: (filterQuery.page - 1) * filterQuery.limit,
       });
@@ -126,13 +126,13 @@ export class SupportDetailsService {
   }
 
   findOne(id: string) {
-    return this.prismaService.supportDetails.findFirst({
+    return this.prismaService.chat.findFirst({
       where: { id },
     });
   }
 
   async update(id: string, updateSupportDetailDto: UpdateSupportDetailDto) {
-    let getSupportDetails = await this.prismaService.supportDetails.findFirst({
+    let getSupportDetails = await this.prismaService.chat.findFirst({
       where: { id: id },
     });
 
@@ -152,7 +152,7 @@ export class SupportDetailsService {
     if (!Boolean(getSupportDetails))
       throw new HttpException(AppMessage.NOT_FOUND, HttpStatusCode.NotFound);
 
-    return await this.prismaService.supportDetails.delete({
+    return await this.prismaService.chat.delete({
       where: { id: id },
     });
   }

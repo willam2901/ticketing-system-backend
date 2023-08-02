@@ -5,5 +5,5 @@ export class Support {
   title: string;
   description: string;
   caseClosed: boolean;
-  supportDetails: [SupportDetail];
+  chat: [SupportDetail];
 }

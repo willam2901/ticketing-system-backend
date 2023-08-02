@@ -105,7 +105,7 @@ export class SupportService {
     return this.prismaService.support.findFirst({
       where: { id },
       include: {
-        supportDetails: true,
+        chat: true,
       },
     });
   }

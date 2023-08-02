@@ -4,6 +4,7 @@ import { SupportService } from '@/api/support/support.service';
 import { CreateSupportDto } from '@/api/support/dto/create-support.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CommandEnum } from '@/api/twilio-webhook/enum/command.enum';
+import { UpdateSupportDto } from '@/api/support/dto/update-support.dto';
 
 @Injectable()
 export class TwilioWebhookService {
@@ -21,6 +22,11 @@ export class TwilioWebhookService {
 
   async support(payload: any) {
     if (payload.Body.toLowerCase() === CommandEnum.HELP) {
+      /*
+       *  SUPPORT CREATE
+       *  AND SEND REPLY TO CUSTOMER
+       *
+       * */
       let data = await this.prismaService.support.create({
         data: {
           uid: payload.WaId,
@@ -29,8 +35,7 @@ export class TwilioWebhookService {
           description: '',
         },
       });
-
-      await this.prismaService.supportDetails.create({
+      await this.prismaService.chat.create({
         data: {
           support_id: data.id,
           message: data.title,
@@ -38,22 +43,49 @@ export class TwilioWebhookService {
           sender_name: payload.ProfileName,
         },
       });
-
-      await this.sendWhatsAppMessage(payload.WaId, 'Describe your issue.');
+      await this.sendMessage(payload.WaId, payload.Body);
+      //SUPPORT CREATE END
     } else {
+      /*
+       * CHECK ALREADY SUPPORT EXIST AND RUNNING OR NOT.
+       * */
       const lastSupport = await this.prismaService.support.findFirst({
         where: { uid: payload.WaId },
         orderBy: { createdAt: 'desc' },
         take: 1,
       });
 
-      if (!Boolean(lastSupport)) {
+      if (
+        payload.Body.toLowerCase() === CommandEnum.CLOSE &&
+        lastSupport.caseClosed === false
+      ) {
+        /*
+         * SUPPORT CLOSE.
+         * */
+        await this.prismaService.chat.create({
+          data: {
+            support_id: lastSupport.id,
+            message: payload.Body,
+            sender: payload.WaId,
+            sender_name: lastSupport.name,
+          },
+        });
+
+        await this.prismaService.support.update({
+          where: { id: lastSupport.id },
+          data: { caseClosed: true },
+        });
+        await this.sendMessage(payload.WaId, payload.Body);
+      } else if (!Boolean(lastSupport)) {
+        /*
+         * IF SUPPORT NOT EXIST .
+         * */
         await this.sendWhatsAppMessage(
           payload.WaId,
           'Type `Help` for create new Support ',
         );
-      } else {
-        await this.prismaService.supportDetails.create({
+      } else if (lastSupport.caseClosed === false) {
+        await this.prismaService.chat.create({
           data: {
             support_id: lastSupport.id,
             message: payload.Body,
@@ -62,7 +94,6 @@ export class TwilioWebhookService {
           },
         });
       }
-      console.log(lastSupport);
     }
 
     return true;
@@ -78,5 +109,18 @@ export class TwilioWebhookService {
     } catch (error) {
       console.error('Twilio Error:', error);
     }
+  }
+
+  async sendMessage(to: string, command: string) {
+    let responseMsg = await this.prismaService.command.findFirst({
+      where: {
+        command: {
+          contains: command.replace(/\s+/g, ' '),
+          mode: 'insensitive',
+        },
+      },
+    });
+
+    await this.sendWhatsAppMessage(to, `${responseMsg.response}`);
   }
 }
