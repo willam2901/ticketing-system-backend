@@ -121,8 +121,8 @@ export class TwilioWebhookService {
         },
       },
     });
-    console.log(command);
-    console.log(responseMsg);
-    await this.sendWhatsAppMessage(to, `${responseMsg.response}`);
+    if (responseMsg !== null) {
+      await this.sendWhatsAppMessage(to, `${responseMsg.response}`);
+    }
   }
 }
