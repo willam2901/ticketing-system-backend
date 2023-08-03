@@ -93,6 +93,7 @@ export class TwilioWebhookService {
             sender_name: lastSupport.name,
           },
         });
+        await this.sendMessage(payload.WaId, payload.Body);
       }
     }
 
