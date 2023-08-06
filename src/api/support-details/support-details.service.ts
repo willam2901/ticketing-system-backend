@@ -138,14 +138,14 @@ export class SupportDetailsService {
 
     if (!Boolean(getSupportDetails))
       throw new HttpException(AppMessage.NOT_FOUND, HttpStatusCode.NotFound);
-    return this.prismaService.support.update({
+    return this.prismaService.chat.update({
       where: { id: id },
       data: updateSupportDetailDto,
     });
   }
 
   async remove(id: string) {
-    let getSupportDetails = await this.prismaService.support.findFirst({
+    let getSupportDetails = await this.prismaService.chat.findFirst({
       where: { id },
     });
 

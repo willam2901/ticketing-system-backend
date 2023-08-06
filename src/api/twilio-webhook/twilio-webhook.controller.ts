@@ -9,6 +9,7 @@ export class TwilioWebhookController {
   @Post('incoming')
   async handleIncomingWhatsAppMessage(@Body() payload: any) {
     const { From, Body: messageBody } = payload;
+    console.log(payload);
     await this.twilioWebhookService.support(payload);
     return { success: true };
   }
