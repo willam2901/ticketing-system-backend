@@ -60,6 +60,8 @@ export class TwilioWebhookService {
           where: { support_id: lastSupport.id },
         });
 
+        console.log('LENGTH', findLength);
+
         if (findLength === 1) {
           await this.sendWhatsAppMessage(
             payload.WaId,
@@ -145,6 +147,8 @@ export class TwilioWebhookService {
         command: 'DEFAULT',
       },
     });
+
+    console.log('============', data);
 
     await this.sendMessage(payload.WaId, data.response);
   }
