@@ -150,6 +150,6 @@ export class TwilioWebhookService {
 
     console.log('============', data);
 
-    await this.sendMessage(payload.WaId, data.response);
+    await this.sendWhatsAppMessage(payload.WaId, data.response);
   }
 }
