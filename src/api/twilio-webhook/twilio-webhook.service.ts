@@ -56,7 +56,7 @@ export class TwilioWebhookService {
       });
 
       if (
-        payload.Body.toLowerCase() === CommandEnum.CLOSE &&
+        payload.Body.toLowerCase() === CommandEnum.DONE &&
         lastSupport.caseClosed === false
       ) {
         /*

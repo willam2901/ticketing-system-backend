@@ -1,5 +1,5 @@
 export enum CommandEnum {
   HELP = 'help',
-  CLOSE = 'close',
+  DONE = 'done',
   INSTRUCTION = 'instruction',
 }
