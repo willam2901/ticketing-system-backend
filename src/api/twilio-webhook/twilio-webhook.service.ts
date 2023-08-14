@@ -125,4 +125,14 @@ export class TwilioWebhookService {
       await this.sendWhatsAppMessage(to, `${responseMsg.response}`);
     }
   }
+
+  async defaultMessage(payload: any) {
+    let data = await this.prismaService.command.findFirst({
+      where: {
+        command: 'DEFAULT',
+      },
+    });
+
+    await this.sendMessage(payload.WaId, data.response);
+  }
 }
