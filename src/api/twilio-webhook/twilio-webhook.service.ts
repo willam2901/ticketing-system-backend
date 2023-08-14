@@ -55,6 +55,19 @@ export class TwilioWebhookService {
         take: 1,
       });
 
+      if (Boolean(lastSupport)) {
+        let findLength = await this.prismaService.chat.count({
+          where: { support_id: lastSupport.id },
+        });
+
+        if (findLength === 1) {
+          await this.sendWhatsAppMessage(
+            payload.WaId,
+            'Your ticket created Successfully. An authorised person will contact with you soon. ',
+          );
+        }
+      }
+
       if (
         payload.Body.toLowerCase() === CommandEnum.DONE &&
         lastSupport.caseClosed === false
