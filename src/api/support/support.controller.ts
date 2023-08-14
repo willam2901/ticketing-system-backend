@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { SupportService } from './support.service';
 import { CreateSupportDto } from './dto/create-support.dto';
@@ -16,16 +17,23 @@ import { EndpointEnum } from '@/app/utils/endpoint.enum';
 import { SupportFilter } from '@/api/support/dto/support.filter';
 import { AppMessage } from '@/app/utils/messages.enum';
 import AppResponse from '@/app/utils/app-response.class';
+import { Roles } from 'nest-keycloak-connect';
+import { Whoiam } from '@/app/decorators/whoiam-decorator';
+import { UserRole } from '@/app/common/user-role.enum';
 
 @Controller(EndpointEnum.SUPPORT)
 export class SupportController {
   constructor(private readonly supportService: SupportService) {}
 
+  @Roles({ roles: [UserRole.ADMIN] })
+  @UseGuards(Whoiam)
   @Post()
   create(@Body() createSupportDto: CreateSupportDto) {
     return this.supportService.create(createSupportDto);
   }
 
+  @Roles({ roles: [UserRole.ADMIN] })
+  @UseGuards(Whoiam)
   @Get()
   async findAll(@Query() query: SupportFilter) {
     const data = await this.supportService.findAll(query);
@@ -36,6 +44,8 @@ export class SupportController {
     });
   }
 
+  @Roles({ roles: [UserRole.ADMIN] })
+  @UseGuards(Whoiam)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     let data = await this.supportService.findOne(id);
@@ -46,6 +56,8 @@ export class SupportController {
     });
   }
 
+  @Roles({ roles: [UserRole.ADMIN] })
+  @UseGuards(Whoiam)
   @Patch(':id')
   async update(
     @Param('id') id: string,
@@ -59,6 +71,8 @@ export class SupportController {
     });
   }
 
+  @Roles({ roles: [UserRole.ADMIN] })
+  @UseGuards(Whoiam)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     let data = await this.supportService.remove(id);
