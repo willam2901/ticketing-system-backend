@@ -131,6 +131,10 @@ export class SupportService {
     if (!Boolean(getSupport))
       throw new HttpException(AppMessage.NOT_FOUND, HttpStatusCode.NotFound);
 
+    await this.prismaService.chat.deleteMany({
+      where: { support_id: id },
+    });
+
     return await this.prismaService.support.delete({
       where: { id: id },
     });
