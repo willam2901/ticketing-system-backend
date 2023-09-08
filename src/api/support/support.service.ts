@@ -67,19 +67,22 @@ export class SupportService {
      *
      * */
     const data = await this.prismaService.support.findMany({
-      where: {
-        OR: aggregation,
-      },
+      where:
+        aggregation.length > 0
+          ? {
+              OR: aggregation,
+            }
+          : {},
     });
     const pagination = {
       page: filterQuery.page,
       limit: filterQuery.limit,
       total: data.length,
       totalPages:
-        data.length < filterQuery.limit ? 1 : data.length / filterQuery.limit,
-      hasNextPage: Boolean(
-        data.length / filterQuery.limit !== filterQuery.page,
-      ),
+        data.length < filterQuery.limit
+          ? 1
+          : Math.ceil(data.length / filterQuery.limit),
+      hasNextPage: data.length / filterQuery.limit > filterQuery.page,
     };
 
     let allData;
@@ -90,11 +93,17 @@ export class SupportService {
         where: {
           OR: aggregation,
         },
+        orderBy: {
+          [filterQuery.sortBy]: filterQuery.sortOrder,
+        },
       });
     } else {
       allData = await this.prismaService.support.findMany({
         take: pagination.limit,
         skip: (filterQuery.page - 1) * filterQuery.limit,
+        orderBy: {
+          [filterQuery.sortBy]: filterQuery.sortOrder,
+        },
       });
     }
 
