@@ -21,12 +21,12 @@ export class SupportDetailsService {
   }
 
   async create(createSupportDetailDto: CreateSupportDetailDto) {
-    let findReceiverData = await this.prismaService.support.findFirst({
+    const findReceiverData = await this.prismaService.support.findFirst({
       where: { id: createSupportDetailDto.support_id },
     });
 
     try {
-      let data = await this.client.messages.create({
+      const data = await this.client.messages.create({
         body: createSupportDetailDto.message,
         from: `whatsapp:${process.env.SENDER_PHONE}`,
         to: `whatsapp:${findReceiverData.uid}`,
@@ -54,7 +54,7 @@ export class SupportDetailsService {
     filterQuery.page = parseInt(String(filterQuery.page));
     filterQuery.limit = parseInt(String(filterQuery.limit));
 
-    let aggregation = [];
+    const aggregation = [];
 
     /*Filter*/
     if (filterQuery.id) {
@@ -90,12 +90,12 @@ export class SupportDetailsService {
      * Pagination Query
      *
      * */
-    let data = await this.prismaService.chat.findMany({
+    const data = await this.prismaService.chat.findMany({
       where: {
         OR: aggregation,
       },
     });
-    let pagination = {
+    const pagination = {
       page: filterQuery.page,
       limit: filterQuery.limit,
       total: data.length,
@@ -132,7 +132,7 @@ export class SupportDetailsService {
   }
 
   async update(id: string, updateSupportDetailDto: UpdateSupportDetailDto) {
-    let getSupportDetails = await this.prismaService.chat.findFirst({
+    const getSupportDetails = await this.prismaService.chat.findFirst({
       where: { id: id },
     });
 
@@ -145,7 +145,7 @@ export class SupportDetailsService {
   }
 
   async remove(id: string) {
-    let getSupportDetails = await this.prismaService.chat.findFirst({
+    const getSupportDetails = await this.prismaService.chat.findFirst({
       where: { id },
     });
 

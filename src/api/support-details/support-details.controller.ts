@@ -47,7 +47,7 @@ export class SupportDetailsController {
   @UseGuards(Whoiam)
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    let data = await this.supportDetailsService.findOne(id);
+    const data = await this.supportDetailsService.findOne(id);
     return new AppResponse({
       statusCode: HttpStatus.OK,
       message: AppMessage.SUPPORT_GET_SUCCESS,
@@ -62,7 +62,7 @@ export class SupportDetailsController {
     @Param('id') id: string,
     @Body() updateSupportDetailDto: UpdateSupportDetailDto,
   ) {
-    let data = await this.supportDetailsService.update(
+    const data = await this.supportDetailsService.update(
       id,
       updateSupportDetailDto,
     );
@@ -77,7 +77,7 @@ export class SupportDetailsController {
   @UseGuards(Whoiam)
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    let data = await this.supportDetailsService.remove(id);
+    const data = await this.supportDetailsService.remove(id);
     return new AppResponse({
       statusCode: HttpStatus.OK,
       message: AppMessage.SUPPORT_DELETE_SUCCESS,

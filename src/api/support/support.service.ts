@@ -30,7 +30,7 @@ export class SupportService {
     filterQuery.page = parseInt(String(filterQuery.page));
     filterQuery.limit = parseInt(String(filterQuery.limit));
 
-    let aggregation = [];
+    const aggregation = [];
 
     /*Filter*/
     if (filterQuery.id) {
@@ -66,12 +66,12 @@ export class SupportService {
      * Pagination Query
      *
      * */
-    let data = await this.prismaService.support.findMany({
+    const data = await this.prismaService.support.findMany({
       where: {
         OR: aggregation,
       },
     });
-    let pagination = {
+    const pagination = {
       page: filterQuery.page,
       limit: filterQuery.limit,
       total: data.length,
@@ -111,7 +111,7 @@ export class SupportService {
   }
 
   async update(id: string, updateSupportDto: UpdateSupportDto) {
-    let getSupport = await this.prismaService.support.findFirst({
+    const getSupport = await this.prismaService.support.findFirst({
       where: { id: id },
     });
 
@@ -124,7 +124,7 @@ export class SupportService {
   }
 
   async remove(id: string) {
-    let getSupport = await this.prismaService.support.findFirst({
+    const getSupport = await this.prismaService.support.findFirst({
       where: { id },
     });
 

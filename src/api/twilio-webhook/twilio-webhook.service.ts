@@ -27,7 +27,7 @@ export class TwilioWebhookService {
        *  AND SEND REPLY TO CUSTOMER
        *
        * */
-      let data = await this.prismaService.support.create({
+      const data = await this.prismaService.support.create({
         data: {
           uid: payload.WaId,
           name: payload.ProfileName,
@@ -56,7 +56,7 @@ export class TwilioWebhookService {
       });
 
       if (Boolean(lastSupport)) {
-        let findLength = await this.prismaService.chat.count({
+        const findLength = await this.prismaService.chat.count({
           where: { support_id: lastSupport.id },
         });
 
@@ -117,7 +117,7 @@ export class TwilioWebhookService {
 
   async sendWhatsAppMessage(to: string, body: string) {
     try {
-      let data = await this.client.messages.create({
+      const data = await this.client.messages.create({
         body: body,
         from: `whatsapp:${process.env.SENDER_PHONE}`,
         to: `whatsapp:${to}`,
@@ -128,7 +128,7 @@ export class TwilioWebhookService {
   }
 
   async sendMessage(to: string, command: string) {
-    let responseMsg = await this.prismaService.command.findFirst({
+    const responseMsg = await this.prismaService.command.findFirst({
       where: {
         command: {
           contains: command.replace(/\s+/g, ' '),
@@ -142,7 +142,7 @@ export class TwilioWebhookService {
   }
 
   async defaultMessage(payload: any) {
-    let data = await this.prismaService.command.findFirst({
+    const data = await this.prismaService.command.findFirst({
       where: {
         command: 'DEFAULT',
       },
