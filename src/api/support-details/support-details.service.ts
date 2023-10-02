@@ -1,10 +1,10 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateSupportDetailDto } from './dto/create-support-detail.dto';
 import { UpdateSupportDetailDto } from './dto/update-support-detail.dto';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { SupportFilter } from '@/api/support/dto/support.filter';
-import { SupportDetailsFilter } from '@/api/support-details/dto/support-details.filter';
-import { AppMessage } from '@/app/utils/messages.enum';
+import { SupportDetailsFilter } from './dto/support-details.filter';
+import { AppMessage } from '../../app/utils/messages.enum';
 import { HttpStatusCode } from 'axios';
 import { TwilioWebhookService } from '@/api/twilio-webhook/twilio-webhook.service';
 import * as Twilio from 'twilio';
@@ -24,6 +24,11 @@ export class SupportDetailsService {
     const findReceiverData = await this.prismaService.support.findFirst({
       where: { id: createSupportDetailDto.support_id },
     });
+
+    if (!findReceiverData || !findReceiverData.uid) {
+      // Handle the case where the receiver data or UID is missing or undefined
+      throw new HttpException(AppMessage.NOT_FOUND, HttpStatusCode.NotFound);
+    }
 
     try {
       const data = await this.client.messages.create({
