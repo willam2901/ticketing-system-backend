@@ -9,11 +9,15 @@ import validationOptions from './app/utils/validation-options';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const microservice =
+  const microserviceApp =
     await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-      transport: Transport.TCP,
+      transport: Transport.REDIS,
+      options: {
+        host: '178.128.220.73',
+        port: 6379,
+      },
     });
-  await microservice.listen();
+  await microserviceApp.listen();
 
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);

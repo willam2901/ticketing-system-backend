@@ -12,4 +12,5 @@ export enum AppMessage {
   SUPPORT_GET_ALL_ERROR = 'Error retrieving all supports!',
   SUPPORT_DELETE_ERROR = 'Error deleting support!',
   SUPPORT_UPDATE_ERROR = 'Error updating support!',
+  NOT_FOUND = 'Not found!',
 }

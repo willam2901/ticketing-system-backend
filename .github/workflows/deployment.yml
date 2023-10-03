@@ -1,0 +1,40 @@
+name: Deploy to DigitalOcean Droplet
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to DigitalOcean
+        uses: appleboy/ssh-action@master
+        with:
+          host: 128.199.164.212
+          username: root
+          password: 1982gonzoO
+          script: |
+            cd ticketing-system-backend
+            git pull
+            npm ci
+            npm run build
+            pm2 stop server
+            pm2 delete server
+            pm2 start dist/main.js --name ticket

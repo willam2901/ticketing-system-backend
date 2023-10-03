@@ -10,33 +10,32 @@ import {
   HttpStatus,
   UseGuards,
 } from '@nestjs/common';
-import { SupportService } from './support.service';
-import { CreateSupportDto } from './dto/create-support.dto';
-import { UpdateSupportDto } from './dto/update-support.dto';
-import { EndpointEnum } from '@/app/utils/endpoint.enum';
-import { SupportFilter } from '@/api/support/dto/support.filter';
-import { AppMessage } from '@/app/utils/messages.enum';
+import { SupportDetailsService } from './support-details.service';
+import { CreateSupportDetailDto } from './dto/create-support-detail.dto';
+import { UpdateSupportDetailDto } from './dto/update-support-detail.dto';
+import { SupportDetailsFilter } from '@/api/support-details/dto/support-details.filter';
 import AppResponse from '@/app/utils/app-response.class';
+import { AppMessage } from '@/app/utils/messages.enum';
 import { Roles } from 'nest-keycloak-connect';
-import { Whoiam } from '@/app/decorators/whoiam-decorator';
 import { UserRole } from '@/app/common/user-role.enum';
+import { Whoiam } from '@/app/decorators/whoiam-decorator';
 
-@Controller(EndpointEnum.SUPPORT)
-export class SupportController {
-  constructor(private readonly supportService: SupportService) {}
+@Controller('support-details')
+export class SupportDetailsController {
+  constructor(private readonly supportDetailsService: SupportDetailsService) {}
 
   @Roles({ roles: [UserRole.ADMIN] })
   @UseGuards(Whoiam)
   @Post()
-  create(@Body() createSupportDto: CreateSupportDto) {
-    return this.supportService.create(createSupportDto);
+  create(@Body() createSupportDetailDto: CreateSupportDetailDto) {
+    return this.supportDetailsService.create(createSupportDetailDto);
   }
 
   @Roles({ roles: [UserRole.ADMIN] })
   @UseGuards(Whoiam)
   @Get()
-  async findAll(@Query() query: SupportFilter) {
-    const data = await this.supportService.findAll(query);
+  async findAll(@Query() query: SupportDetailsFilter) {
+    const data = await this.supportDetailsService.findAll(query);
     return new AppResponse({
       statusCode: HttpStatus.OK,
       message: AppMessage.SUPPORT_GET_ALL_SUCCESS,
@@ -48,7 +47,7 @@ export class SupportController {
   @UseGuards(Whoiam)
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const data = await this.supportService.findOne(id);
+    const data = await this.supportDetailsService.findOne(id);
     return new AppResponse({
       statusCode: HttpStatus.OK,
       message: AppMessage.SUPPORT_GET_SUCCESS,
@@ -61,9 +60,12 @@ export class SupportController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateSupportDto: UpdateSupportDto,
+    @Body() updateSupportDetailDto: UpdateSupportDetailDto,
   ) {
-    const data = await this.supportService.update(id, updateSupportDto);
+    const data = await this.supportDetailsService.update(
+      id,
+      updateSupportDetailDto,
+    );
     return new AppResponse({
       statusCode: HttpStatus.OK,
       message: AppMessage.SUPPORT_UPDATE_SUCCESS,
@@ -75,7 +77,7 @@ export class SupportController {
   @UseGuards(Whoiam)
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const data = await this.supportService.remove(id);
+    const data = await this.supportDetailsService.remove(id);
     return new AppResponse({
       statusCode: HttpStatus.OK,
       message: AppMessage.SUPPORT_DELETE_SUCCESS,
